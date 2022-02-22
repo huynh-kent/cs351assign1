@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<!--Kent Huynh
+    CS 351 Assignment 1
+    2/21/22
+    First time using HTML/JavaScript
+    Piano Key Note Player, can play 2 different music sheets at a time-->
+<html>
+    <head>
+    <style>
+        textarea {
+            resize: none;
+            background-color: powderblue;
+        }
+    
+    </style>
+    </head>
+    <body>
+        <h1>Piano Key Note Player</h1>
+        <p>By Kent Huynh</p>
+        <textarea  id="textBox" rows="24" cols="24" placeholder="RightHand Notes&#10;&#10;CDEFGAB followed by 0-4&#10;Lowercase for Sharp Notes&#10;Higher Number = Higher Octave&#10;Ex: A1 F1 G3  b4&#10;Separtate Notes with Spaces&#10;More Spaces means more time inbetween Notes." ></textarea>
+        <textarea  id="leftHand" rows ="24" cols="24" placeholder='LeftHand Notes&#10;&#10;CDEFGAB followed by 0-4&#10;Lowercase for Sharp Notes&#10;Higher Number = Higher Octave&#10;Ex: A1 F1 G3  b4&#10;Separtate Notes with Spaces&#10;More Spaces means more time inbetween Notes.'></textarea>
+        <textarea readonly id="compiledCode" rows="24" cols = "24" placeholder='Where CompiledScript Will Display'></textarea> <br/>
+        <textarea readonly disabled id="sortedNotes" rows="10" cols="24" placeholder="Where Notes Will Be Sorted And Parsed For Right Hand"></textarea>
+        <textarea readonly disabled id="sortedNotesLeft" rows="10" cols="24" placeholder="Where Notes Will Be Sorted And Parsed For Left Hand"></textarea>
+        <img src="mario.jpeg" height="150" width="150"><br/>
+        <button onclick="playNotes();">Play Music</button>
+        <button onclick="loadMario();">Load Mario</button>
+        <button onclick="copyText();">Copy RightHand To Clipboard</button>
+        <button onclick="copyLeft();">Copy LeftHand To Clipboard</button>
+        <button onclick="copyCompiledCode();">Copy Code To Clipboard</button><br/>
+        <script type="text/javascript">
+            var htmlTemplate = "<html><body><button onclick='playSong();'>Play Compiled Song</button><script>\n"
+            function copyCompiledCode()
+            {
+                var copy = document.getElementById('compiledCode');
+                copy.select();
+                navigator.clipboard.writeText(copy.value);
+            }
+
+            function copyText()
+            {
+                var copy = document.getElementById("textBox");
+                copy.select();
+                navigator.clipboard.writeText(copy.value);
+            }
+
+            function copyLeft()
+            {
+                var copy = document.getElementById('leftHand');
+                copy.select();
+                navigator.clipboard.writeText(copy.value);
+            }
+
+            function loadMario()
+            {
+                document.getElementById('textBox').value = "E3  E3  E3  C3 E3  G3    G2   \n\nC3   G2   E2   A2  B2  a2 A2 \n\nG2 E3 G3 A3  F3 G3  E3 C3 D3 B2 \n\nC3   G2   E2   A2  B2  a2 A2 \n\nG2 E3 G3 A3  F3 G3  E3 C3 D3 B2   \n\nG3 f3 F3 D3 E3  G2 A2 C3 A2 C3 D3  \n\nG3 f3 F3 D3 E3  C4  C4 C4    \n\nG3 f3 F3 D3 E3  G2 A2 C3 A2 C3 D3   d3   D3   C3    \n\nC3 C3  C3  C3  D3 E3 C3 A2 G2  \n\nC3 C3  C3  C3 D3  E3    \n\nC3 C3  C3  C3  D3 E3 C3 A2 G2  \n\nE3 E3  E3  C3 E3  G3    G2 \n\nC3   G2   E2   A2  B2  a2 A2 \n\nG2 E3 G3 A3  F3 G3  E3 C3 D3 B2 \n\nC3   G2   E2   A2  B2  a2 A2 \n\nG2 E3 G3 A3  F3 G3  E3 C3 D3 B2 \n\nE3 C3  G2   g2  A2 F3  F3 A2   B2 A3 A3 A3 G3 F3 E3 C3  A2 G2 \n\nE3 C3  G2   g2  A2 F3  F3 A2   B2 F3 F3 F3 E3 D3 C3 G2  E2 C2 \n\nC3   G2   E2    A2 B2 A2  g2 a2 g2   G2 f2 G2    ";
+                document.getElementById('leftHand').value = "D1             G1   \n\nC1         F1      \n\nC1            \n\nC1         F1      \n\nC1              \n\nC1      F1       \n\nC1      F1       \n\nC1      F1                  \n\ng1        C1     \n\ng1       C1     \n\ng1        C1     \n\nD1        G1     \n\nC1         F1      \n\nC1            \n\nC1         F1      \n\nC1            \n\nC1        F1       G1      C1     \n\nC1        F1       G1      C1     "
+            }
+            
+            function playNotes() {
+                songRight = document.getElementById("textBox").value
+                sortedRight = document.getElementById('sortedNotes')
+                songLeft = document.getElementById('leftHand').value
+                sortedLeft = document.getElementById('sortedNotesLeft')
+
+                sortNotes(songRight, sortedRight)
+                lines = sortedRight.value.split(/\r?\n/);
+
+                sortNotes(songLeft, sortedLeft)
+                linesLeft = sortedLeft.value.split(/\r?\n/);
+
+                soundDelay = 0;
+                compiledScript = "function playSong() { \n";
+                for(i = 0; i < lines.length; ++i){
+                    console.log(lines[i]);
+                    soundDelay = (100 * i) + 1000;
+
+                    if(lines[i][0] == 'C'){
+                        console.log("Play 1C");
+                        setTimeout(function() {
+                           new Audio('C1.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('C1.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][1] == 'c'){
+                        console.log("Play 1c");
+                        setTimeout(function() {
+                           new Audio('Db1.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Db1.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][2] == 'D'){
+                        console.log("Play 1D");
+                        setTimeout(function() {
+                           new Audio('D1.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('D1.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][3] == 'd'){
+                        console.log("Play 1d");
+                        setTimeout(function() {
+                           new Audio('Eb1.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Eb1.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][4] == 'E'){
+                        console.log("Play 1E");
+                        setTimeout(function() {
+                           new Audio('E1.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('E1.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][5] == 'F'){
+                        console.log("Play 1F");
+                        setTimeout(function() {
+                           new Audio('F1.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('F1.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][6] == 'f'){
+                        console.log("Play 1f");
+                        setTimeout(function() {
+                           new Audio('Gb1.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Gb1.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][7] == 'G'){
+                        console.log("Play 1G");
+                        setTimeout(function() {
+                           new Audio('G1.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('G1.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][8] == 'g'){
+                        console.log("Play 1g");
+                        setTimeout(function() {
+                           new Audio('Ab1.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Ab1.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][9] == 'A'){
+                        console.log("Play 1A");
+                        setTimeout(function() {
+                           new Audio('A1.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('A1.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][10] == 'a'){
+                        console.log("Play 1a");
+                        setTimeout(function() {
+                           new Audio('Bb1.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Bb1.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][11] == 'B'){
+                        console.log("Play 1B");
+                        setTimeout(function() {
+                           new Audio('B1.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('B1.mp3').play()}, " + soundDelay + ");\n"
+                    }
+
+                    if(lines[i][12] == 'C'){
+                        console.log("Play 2C");
+                        setTimeout(function() {
+                           new Audio('C2.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('C2.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][13] == 'c'){
+                        console.log("Play 2c");
+                        setTimeout(function() {
+                           new Audio('Db2.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Db2.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][14] == 'D'){
+                        console.log("Play 2D");
+                        setTimeout(function() {
+                           new Audio('D2.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('D2.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][15] == 'd'){
+                        console.log("Play 2d");
+                        setTimeout(function() {
+                           new Audio('Eb2.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Eb2.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][16] == 'E'){
+                        console.log("Play 2E");
+                        setTimeout(function() {
+                           new Audio('E2.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('E2.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][17] == 'F'){
+                        console.log("Play 2F");
+                        setTimeout(function() {
+                           new Audio('F2.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('F2.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][18] == 'f'){
+                        console.log("Play 2f");
+                        setTimeout(function() {
+                           new Audio('Gb2.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Gb2.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][19] == 'G'){
+                        console.log("Play 2G");
+                        setTimeout(function() {
+                           new Audio('G2.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('G2.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][20] == 'g'){
+                        console.log("Play 2g");
+                        setTimeout(function() {
+                           new Audio('Ab2.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Ab2.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][21] == 'A'){
+                        console.log("Play 2A");
+                        setTimeout(function() {
+                           new Audio('A2.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('A2.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][22] == 'a'){
+                        console.log("Play 2a");
+                        setTimeout(function() {
+                           new Audio('Bb2.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Bb2.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][23] == 'B'){
+                        console.log("Play 2B");
+                        setTimeout(function() {
+                           new Audio('B2.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('B2.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][24] == 'C'){
+                        console.log("Play 3C");
+                        setTimeout(function() {
+                           new Audio('C3.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('C3.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][25] == 'c'){
+                        console.log("Play 3c");
+                        setTimeout(function() {
+                           new Audio('Db3.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Db3.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][26] == 'D'){
+                        console.log("Play 3D");
+                        setTimeout(function() {
+                           new Audio('D3.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('D3.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][27] == 'd'){
+                        console.log("Play 3d");
+                        setTimeout(function() {
+                           new Audio('Eb3.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Eb3.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][28] == 'E'){
+                        console.log("Play 3E");
+                        setTimeout(function() {
+                           new Audio('E3.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('E3.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][29] == 'F'){
+                        console.log("Play 3F");
+                        setTimeout(function() {
+                           new Audio('F3.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('F3.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][30] == 'f'){
+                        console.log("Play 3f");
+                        setTimeout(function() {
+                           new Audio('Gb3.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Gb3.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][31] == 'G'){
+                        console.log("Play 3G");
+                        setTimeout(function() {
+                           new Audio('G3.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('G3.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][32] == 'g'){
+                        console.log("Play 3g");
+                        setTimeout(function() {
+                           new Audio('Ab3.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Ab3.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][33] == 'A'){
+                        console.log("Play 3A");
+                        setTimeout(function() {
+                           new Audio('A3.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('A3.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][34] == 'a'){
+                        console.log("Play 3a");
+                        setTimeout(function() {
+                           new Audio('Bb3.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Bb3.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][35] == 'B'){
+                        console.log("Play 3B");
+                        setTimeout(function() {
+                           new Audio('B3.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('B3.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][36] == 'C'){
+                        console.log("Play 4C");
+                        setTimeout(function() {
+                           new Audio('C4.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('C4.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][37] == 'c'){
+                        console.log("Play 4c");
+                        setTimeout(function() {
+                           new Audio('Db4.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Db4.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][38] == 'D'){
+                        console.log("Play 4D");
+                        setTimeout(function() {
+                           new Audio('D4.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('D4.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][39] == 'd'){
+                        console.log("Play 4d");
+                        setTimeout(function() {
+                           new Audio('Eb4.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Eb4.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][40] == 'E'){
+                        console.log("Play 4E");
+                        setTimeout(function() {
+                           new Audio('E4.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('E4.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][41] == 'F'){
+                        console.log("Play 4F");
+                        setTimeout(function() {
+                           new Audio('F4.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('F4.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][42] == 'f'){
+                        console.log("Play 4f");
+                        setTimeout(function() {
+                           new Audio('Gb4.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Gb4.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][43] == 'G'){
+                        console.log("Play 4G");
+                        setTimeout(function() {
+                           new Audio('G4.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('G4.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][44] == 'g'){
+                        console.log("Play 4g");
+                        setTimeout(function() {
+                           new Audio('Ab4.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Ab4.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][45] == 'A'){
+                        console.log("Play 4A");
+                        setTimeout(function() {
+                           new Audio('A4.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('A4.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][46] == 'a'){
+                        console.log("Play 4a");
+                        setTimeout(function() {
+                           new Audio('Bb4.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Bb4.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(lines[i][47] == 'B'){
+                        console.log("Play 4B");
+                        setTimeout(function() {
+                           new Audio('B4.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('B4.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                document.getElementById("compiledCode").value = htmlTemplate + compiledScript + "}\n<\/script></html>";
+                }
+
+                for(i = 0; i < linesLeft.length; ++i){
+                    console.log(linesLeft[i]);
+                    soundDelay = (100 * i) + 1000;
+
+                    if(linesLeft[i][0] == 'C'){
+                        console.log("Play 1C");
+                        setTimeout(function() {
+                           new Audio('C1.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('C1.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][1] == 'c'){
+                        console.log("Play 1c");
+                        setTimeout(function() {
+                           new Audio('Db1.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Db1.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][2] == 'D'){
+                        console.log("Play 1D");
+                        setTimeout(function() {
+                           new Audio('D1.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('D1.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][3] == 'd'){
+                        console.log("Play 1d");
+                        setTimeout(function() {
+                           new Audio('Eb1.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Eb1.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][4] == 'E'){
+                        console.log("Play 1E");
+                        setTimeout(function() {
+                           new Audio('E1.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('E1.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][5] == 'F'){
+                        console.log("Play 1F");
+                        setTimeout(function() {
+                           new Audio('F1.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('F1.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][6] == 'f'){
+                        console.log("Play 1f");
+                        setTimeout(function() {
+                           new Audio('Gb1.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Gb1.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][7] == 'G'){
+                        console.log("Play 1G");
+                        setTimeout(function() {
+                           new Audio('G1.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('G1.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][8] == 'g'){
+                        console.log("Play 1g");
+                        setTimeout(function() {
+                           new Audio('Ab1.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Ab1.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][9] == 'A'){
+                        console.log("Play 1A");
+                        setTimeout(function() {
+                           new Audio('A1.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('A1.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][10] == 'a'){
+                        console.log("Play 1a");
+                        setTimeout(function() {
+                           new Audio('Bb1.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Bb1.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][11] == 'B'){
+                        console.log("Play 1B");
+                        setTimeout(function() {
+                           new Audio('B1.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('B1.mp3').play()}, " + soundDelay + ");\n"
+                    }
+
+                    if(linesLeft[i][12] == 'C'){
+                        console.log("Play 2C");
+                        setTimeout(function() {
+                           new Audio('C2.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('C2.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][13] == 'c'){
+                        console.log("Play 2c");
+                        setTimeout(function() {
+                           new Audio('Db2.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Db2.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][14] == 'D'){
+                        console.log("Play 2D");
+                        setTimeout(function() {
+                           new Audio('D2.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('D2.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][15] == 'd'){
+                        console.log("Play 2d");
+                        setTimeout(function() {
+                           new Audio('Eb2.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Eb2.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][16] == 'E'){
+                        console.log("Play 2E");
+                        setTimeout(function() {
+                           new Audio('E2.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('E2.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][17] == 'F'){
+                        console.log("Play 2F");
+                        setTimeout(function() {
+                           new Audio('F2.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('F2.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][18] == 'f'){
+                        console.log("Play 2f");
+                        setTimeout(function() {
+                           new Audio('Gb2.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Gb2.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][19] == 'G'){
+                        console.log("Play 2G");
+                        setTimeout(function() {
+                           new Audio('G2.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('G2.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][20] == 'g'){
+                        console.log("Play 2g");
+                        setTimeout(function() {
+                           new Audio('Ab2.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Ab2.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][21] == 'A'){
+                        console.log("Play 2A");
+                        setTimeout(function() {
+                           new Audio('A2.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('A2.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][22] == 'a'){
+                        console.log("Play 2a");
+                        setTimeout(function() {
+                           new Audio('Bb2.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Bb2.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][23] == 'B'){
+                        console.log("Play 2B");
+                        setTimeout(function() {
+                           new Audio('B2.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('B2.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][24] == 'C'){
+                        console.log("Play 3C");
+                        setTimeout(function() {
+                           new Audio('C3.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('C3.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][25] == 'c'){
+                        console.log("Play 3c");
+                        setTimeout(function() {
+                           new Audio('Db3.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Db3.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][26] == 'D'){
+                        console.log("Play 3D");
+                        setTimeout(function() {
+                           new Audio('D3.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('D3.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][27] == 'd'){
+                        console.log("Play 3d");
+                        setTimeout(function() {
+                           new Audio('Eb3.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Eb3.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][28] == 'E'){
+                        console.log("Play 3E");
+                        setTimeout(function() {
+                           new Audio('E3.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('E3.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][29] == 'F'){
+                        console.log("Play 3F");
+                        setTimeout(function() {
+                           new Audio('F3.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('F3.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][30] == 'f'){
+                        console.log("Play 3f");
+                        setTimeout(function() {
+                           new Audio('Gb3.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Gb3.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][31] == 'G'){
+                        console.log("Play 3G");
+                        setTimeout(function() {
+                           new Audio('G3.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('G3.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][32] == 'g'){
+                        console.log("Play 3g");
+                        setTimeout(function() {
+                           new Audio('Ab3.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Ab3.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][33] == 'A'){
+                        console.log("Play 3A");
+                        setTimeout(function() {
+                           new Audio('A3.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('A3.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][34] == 'a'){
+                        console.log("Play 3a");
+                        setTimeout(function() {
+                           new Audio('Bb3.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Bb3.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][35] == 'B'){
+                        console.log("Play 3B");
+                        setTimeout(function() {
+                           new Audio('B3.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('B3.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][36] == 'C'){
+                        console.log("Play 4C");
+                        setTimeout(function() {
+                           new Audio('C4.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('C4.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][37] == 'c'){
+                        console.log("Play 4c");
+                        setTimeout(function() {
+                           new Audio('Db4.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Db4.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][38] == 'D'){
+                        console.log("Play 4D");
+                        setTimeout(function() {
+                           new Audio('D4.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('D4.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][39] == 'd'){
+                        console.log("Play 4d");
+                        setTimeout(function() {
+                           new Audio('Eb4.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Eb4.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][40] == 'E'){
+                        console.log("Play 4E");
+                        setTimeout(function() {
+                           new Audio('E4.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('E4.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][41] == 'F'){
+                        console.log("Play 4F");
+                        setTimeout(function() {
+                           new Audio('F4.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('F4.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][42] == 'f'){
+                        console.log("Play 4f");
+                        setTimeout(function() {
+                           new Audio('Gb4.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Gb4.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][43] == 'G'){
+                        console.log("Play 4G");
+                        setTimeout(function() {
+                           new Audio('G4.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('G4.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][44] == 'g'){
+                        console.log("Play 4g");
+                        setTimeout(function() {
+                           new Audio('Ab4.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Ab4.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][45] == 'A'){
+                        console.log("Play 4A");
+                        setTimeout(function() {
+                           new Audio('A4.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('A4.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][46] == 'a'){
+                        console.log("Play 4a");
+                        setTimeout(function() {
+                           new Audio('Bb4.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('Bb4.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                    if(linesLeft[i][47] == 'B'){
+                        console.log("Play 4B");
+                        setTimeout(function() {
+                           new Audio('B4.mp3').play()}, soundDelay);
+                        compiledScript += "setTimeout(function() {\n new Audio('B4.mp3').play()}, " + soundDelay + ");\n"
+                    }
+                document.getElementById("compiledCode").value = htmlTemplate + compiledScript + "}\n<\/script></html>";
+                }
+            }
+
+            function sortNotes(song, sortedText){
+             //   song = song.split("\n").join("\n")
+                song = song.split(" ").join("\n\n")
+                song = song.split("-").join("\n")
+
+                song = song.split("C1").join("C")
+                song = song.split("c1").join(" c")
+                song = song.split("D1").join("  D")
+                song = song.split("d1").join("   d")
+                song = song.split("E1").join("    E")
+                song = song.split("F1").join("     F")
+                song = song.split("f1").join("      f")
+                song = song.split("G1").join("       G")
+                song = song.split("g1").join("        g")
+                song = song.split("A1").join("         A")
+                song = song.split("a1").join("          a")
+                song = song.split("B1").join("           B")
+
+                song = song.split("C2").join("            C")
+                song = song.split("c2").join("             c")
+                song = song.split("D2").join("              D")
+                song = song.split("d2").join("               d")
+                song = song.split("E2").join("                E")
+                song = song.split("F2").join("                 F")
+                song = song.split("f2").join("                  f")
+                song = song.split("G2").join("                   G")
+                song = song.split("g2").join("                    g")
+                song = song.split("A2").join("                     A")
+                song = song.split("a2").join("                      a")
+                song = song.split("B2").join("                       B")
+
+
+                song = song.split("C3").join("                        C")
+                song = song.split("c3").join("                         c")
+                song = song.split("D3").join("                          D")
+                song = song.split("d3").join("                           d")
+                song = song.split("E3").join("                            E")
+                song = song.split("F3").join("                             F")
+                song = song.split("f3").join("                              f")
+                song = song.split("G3").join("                               G")
+                song = song.split("g3").join("                                g")
+                song = song.split("A3").join("                                 A")
+                song = song.split("a3").join("                                  a")
+                song = song.split("B3").join("                                   B")
+
+                song = song.split("C4").join("                                    C")
+                song = song.split("c4").join("                                     c")
+                song = song.split("D4").join("                                      D")
+                song = song.split("d4").join("                                       d")
+                song = song.split("E4").join("                                        E")
+                song = song.split("F4").join("                                         F")
+                song = song.split("f4").join("                                          f")
+                song = song.split("G4").join("                                           G")
+                song = song.split("g4").join("                                            g")
+                song = song.split("A4").join("                                             A")
+                song = song.split("a4").join("                                              a")
+                song = song.split("B4").join("                                               B")
+                
+                sortedText.value = song;
+            }
+        </script>
+    </body>
+</html>

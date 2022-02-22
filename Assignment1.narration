@@ -1,0 +1,27 @@
+10 - make text area unable to resize, change background color
+18 - title
+20-24 - declare text areas with ids/dimensions/placeholders/tags
+25 - insert image with dimensions
+26-30 - declare buttons that execute functions 'onclick'
+32 - declare variable to hold beginning of compiledCode string
+33 - function that copies compiledCode to clipboard from textarea
+40/47 - function to copy text from left and right hand textareas
+54 - function to load premade song into both left and right hand textareas
+60 - function to play notes in both textareas
+61/63 - store text from textarea into a variable
+62/64 - store location for sorted notes
+66 - sort righthand text, store into sorted textarea
+67 - split sorted text by lines
+72 - declare note play delay variable
+73 - declare beginning of function in script
+74 - for each line of righthand notes check if there is a note and play that note
+     delay increases with each line, print in console if note played
+     add to compiled script to play note with same delay
+367 - load compiledCode/script into textarea
+
+370 - do same thing for lefthand notes
+663 - updates compiledCode/script in textarea
+
+667 - function that sorts/parses notes and puts them in their appropriate column,
+        puts sorted text into new textarea
+
